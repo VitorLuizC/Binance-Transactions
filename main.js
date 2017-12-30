@@ -4,10 +4,6 @@
     return +number;
   };
 ​
-  const toTime = (date) => {
-
-  }
-​
   const rows = [ ...document.querySelectorAll('tbody tr') ];
 ​
   const transactions = rows.map((row) => {
@@ -21,9 +17,17 @@
       total
     ] = row.querySelectorAll('td');
 ​
-    const quantity = +filled.textContent - getNumber(fee.textContent);
-​
-    const price = +(getNumber(total.textContent) / quantity).toFixed(8);
+    const quantity = (
+      type.textContent === 'Buy'
+        ? +filled.textContent - getNumber(fee.textContent)
+        : +filled.textContent
+    );
+
+    const price = (
+      type.textContent === 'Buy'
+        ? +(getNumber(total.textContent) / quantity).toFixed(8)
+        : +((getNumber(total.textContent) - getNumber(fee.textContent)) / quantity).toFixed(8)
+    );
 ​
     return {
       date: new Date(date.textContent).toLocaleDateString('pt-BR'),
