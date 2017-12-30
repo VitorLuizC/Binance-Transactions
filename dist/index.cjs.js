@@ -1,34 +1,74 @@
 'use strict';
 
-var getNumber = function (value) {
-  var ref = /(\d*\.\d*)/g.exec(value);
-  var number = ref[1];
-  return +number;
-};
+/**
+ * Get element's text.
+ * @param {string} selector
+ * @param {HTMLElement|Document} [parent]
+ * @returns {string}
+ */
+function getText(selector, parent) {
+  if ( parent === void 0 ) parent = document;
 
-var rows = [].concat( document.querySelectorAll('tbody tr') );
+  var element = parent.querySelector(selector);
+  var text = element.textContent || '';
+  return text;
+}
 
-var transactions = rows.map(function (row) {
-  var ref = row.querySelectorAll('td');
-  var date = ref[0];
-  var pair = ref[1];
-  var type = ref[2];
-  var filled = ref[4];
-  var fee = ref[5];
-  var total = ref[6];
+/**
+ * Transaction object.
+ * @typedef {object} Transaction
+ * @property {string} date
+ * @property {'Buy'|'Sell'} type
+ * @property {string} pair
+ * @property {number} price
+ * @property {number} quantity
+ * @property {number} total
+ */
 
-  var quantity = type.textContent === 'Buy' ? +filled.textContent - getNumber(fee.textContent) : +filled.textContent;
+/**
+ * Get all history itens as transactions.
+ * @param {HTMLTableRowElement[]} rows
+ * @returns {Transaction[]}
+ */
+function getTransactions(rows) {
+  var transactions = rows.map(function (row) {
+    var date = new Date(getText('td:nth-child(1)', row));
+    var pair = getText('td:nth-child(2)', row);
+    var type = getText('td:nth-child(3)', row);
+    var filled = +getText('td:nth-child(5)', row);
+    var fee = +getText('td:nth-child(6)', row);
+    var total = getCurrency(getText('td:nth-child(7)', row));
 
-  var price = type.textContent === 'Buy' ? +(getNumber(total.textContent) / quantity).toFixed(8) : +((getNumber(total.textContent) - getNumber(fee.textContent)) / quantity).toFixed(8);
+    var quantity = type.textContent === 'Buy' ? +filled.textContent - getCurrency(fee.textContent) : +filled.textContent;
 
-  return {
-    date: new Date(date.textContent).toLocaleDateString('pt-BR'),
-    type: type.textContent,
-    pair: pair.textContent,
-    price: price,
-    quantity: quantity,
-    total: +(quantity * price).toFixed(8)
-  };
-});
+    var price = type.textContent === 'Buy' ? +(getCurrency(total.textContent) / quantity).toFixed(8) : +((getCurrency(total.textContent) - getCurrency(fee.textContent)) / quantity).toFixed(8);
+
+    return {
+      date: date,
+      type: type,
+      pair: pair,
+      price: price,
+      quantity: quantity,
+      total: +(quantity * price).toFixed(8)
+    };
+  });
+}
+
+/**
+ * Get currency's value.
+ * @example ```js
+ * '0.18000000 BTC/XVG' => 0.18
+ * ```
+ * @param {string} value
+ * @returns {number}
+ */
+function getCurrency(value) {
+  var ref = /\d+\.\d+/.exec(value);
+  var currency = ref[0];
+  return +currency;
+}
+
+var rows = Array.from(document.querySelectorAll('tbody tr'));
+var transactions = getTransactions(rows);
 
 console.log(JSON.stringify(transactions, null, 2));
