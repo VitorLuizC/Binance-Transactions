@@ -1,0 +1,29 @@
+{
+  "name": "binance-transactions",
+  "version": "0.0.1",
+  "description": "",
+  "author": {
+    "url": "https://vitorluizc.github.io/",
+    "name": "Vitor Cavalcanti",
+    "email": "vitorluizc@outlook.com"
+  },
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VitorLuizC/Binance-Transactions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VitorLuizC/Binance-Transactions/issues"
+  },
+  "homepage": "https://github.com/VitorLuizC/Binance-Transactions#readme",
+  "main": "dist/index.cjs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "bili",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "bili": "^1.3.1"
+  }
+}
