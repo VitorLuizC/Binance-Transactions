@@ -33,17 +33,17 @@ export default function getTransactions (rows) {
 
     const price = (
       type.textContent === 'Buy'
-        ? +(getCurrency(total.textContent) / quantity).toFixed(8)
-        : +((getCurrency(total.textContent) - getCurrency(fee.textContent)) / quantity).toFixed(8)
+        ? getCurrency(total.textContent) / quantity
+        : (getCurrency(total.textContent) - getCurrency(fee.textContent)) / quantity
     );
 
     return {
       date,
       type,
       pair,
-      price,
-      quantity,
-      total: +(quantity * price).toFixed(8)
+      price: toCurrency(price),
+      quantity: toCurrency(quantity),
+      total: toCurrency(quantity * price)
     };
   });
 }
